@@ -1,20 +1,17 @@
-import { Fragment } from 'react'
-import { useState } from 'react'
+import { Fragment, useState } from "react"
+import { useParams } from 'react-router-dom'
 import { connect } from 'react-redux'
-import { addJob } from '../../redux/jobs/jobs.actions'
+import { editJob } from '../../redux/jobs/jobs.actions'
 import { useNavigate } from 'react-router-dom'
 
-const AddJob = ({ jobs, addDetails }) => {
-
+const EditJob = ({ jobs, editJobDetails }) => {
     const history = useNavigate()
-
-    const [jobDetails, setJobDetails] = useState({
-        id: jobs.length + 1,
-        title: '',
-        description: '',
-        experience: '',
-        datePosted: new Date().toDateString()
-    })
+    const { id } = useParams()
+    const specificJob = jobs.filter(job => job.id.toString() === id)
+    const [jobDetails, setJobDetails] = useState(
+        {
+            ...specificJob[0]
+        })
 
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -22,29 +19,28 @@ const AddJob = ({ jobs, addDetails }) => {
             ...prevDetails,
             [name]: value
         }))
-
-
     }
 
     const saveJobDetails = () => {
-        console.log(jobDetails)
-        addDetails(jobDetails)
+        editJobDetails(id, jobDetails)
         history('/', { replace: true })
     }
 
-    const addJobDetails = () => {
+    const updateJobDetails = () => {
         setJobDetails(prevDetails => ({
             ...prevDetails,
+            datePosted: new Date().toDateString()
         }))
 
         saveJobDetails()
 
     }
 
+
     return (
         <Fragment>
             <center>
-                <h1>Add Job</h1>
+                <h1>Edit Job</h1>
                 <div style={{ marginLeft: '250px', marginRight: '250px' }}>
                     <div style={{ paddingBottom: '20px' }}>
                         <p style={{ marginLeft: '-500px', fontSize: '30px', marginBottom: '20px' }}>Job Title</p>
@@ -64,7 +60,7 @@ const AddJob = ({ jobs, addDetails }) => {
                         </select>
                     </div>
                     <div>
-                        <button style={{ paddingLeft: '50px', paddingRight: '50px', paddingTop: '5px', paddingBottom: '5px', fontSize: '15px', borderRadius: '0px', backgroundColor: 'blue', color: 'white', marginLeft: '130px', cursor: 'pointer' }} onClick={addJobDetails}>Add</button>
+                        <button style={{ paddingLeft: '50px', paddingRight: '50px', paddingTop: '5px', paddingBottom: '5px', fontSize: '15px', borderRadius: '0px', backgroundColor: 'blue', color: 'white', marginLeft: '130px', cursor: 'pointer' }} onClick={() => updateJobDetails()}>Save</button>
                     </div>
                 </div>
             </center>
@@ -76,8 +72,8 @@ const mapStateToProps = (state) => ({
     jobs: state.jobs
 })
 
-const mapDispatchToProps = (dispatch) => ({
-    addDetails: (jobDetails) => dispatch(addJob(jobDetails))
+const mapDispatchToProps = dispatch => ({
+    editJobDetails: (id, jobDetails) => dispatch(editJob(id, jobDetails))
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddJob)
+export default connect(mapStateToProps, mapDispatchToProps)(EditJob)

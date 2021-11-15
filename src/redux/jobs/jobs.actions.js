@@ -8,9 +8,13 @@ export const addJob = (jobDetails) => ({
 export const deleteJob = (jobID) => ({
     type: JobActions.DELETE_JOB,
     payload: jobID
+
 })
 
-export const editJob = (jobID) => ({
+export const editJob = (jobID, jobDetails) => ({
     type: JobActions.EDIT_JOB,
-    payload: jobID
+    payload: {
+        jobID: jobID,
+        jobDetails: jobDetails
+    }
 })
